@@ -91,8 +91,8 @@ export default class RankScreen extends React.Component {
             select
         });
         
-        Animated.timing(             // 随时间变化而执行动画
-            this.state.select[i].left,            // 动画中的变量值
+        Animated.timing(// 随时间变化而执行动画
+            this.state.select[i].left,// 动画中的变量值
             {
                 toValue,
                 duration: 200,// 让动画持续一段时间

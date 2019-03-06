@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Platform,StatusBar} from 'react-native';
 import Root from './src/navigations/Root'
+import { Provider } from '@ant-design/react-native';
 const isAndroid = Platform.OS==="android"
 
 if(isAndroid){
@@ -12,7 +13,9 @@ if(isAndroid){
 export default class App extends Component{
   render() {
     return (
-      <Root/>
+      <Provider>
+        <Root/>
+      </Provider>
     );
   }
 }

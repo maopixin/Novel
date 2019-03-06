@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Platform, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Animated} from "react-native";
+import { View, Platform, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Animated, FlatList, Image} from "react-native";
 import Header from '../components/Header'
 import AntIcon from 'react-native-vector-icons/AntDesign'
+import {getRank} from '../api'
+import { Portal, Toast } from '@ant-design/react-native'
 
 const isAndroid = Platform.OS == "android";
 const { width } = Dimensions.get('window');
@@ -15,7 +17,7 @@ export default class RankScreen extends React.Component {
         header: null,
     }
     state = {
-        // 
+        refreshing: false,
         backgroundColor:"#409EFF",
         select:[
             {
@@ -80,15 +82,52 @@ export default class RankScreen extends React.Component {
                     }
                 ]
             }
-            
-        ]
+        ],
+        novelList:[],
+        page:1
     }
+    // 组件挂载之前请求一次数据
+    componentWillMount = ()=> {
+        this.getData();
+    }
+    getData = () => {
+        let {novelList,page} = this.state;
+        if(page>5){
+            Toast.info("已经到底了", 1000);
+        }else{
+            const key = Toast.loading("努力加载中", 0);
+        
+            getRank({
+                url:this.getSearchUrl(this.state.page)
+            })
+            .then(res=>{
+                if(res.status=="1"){
+                    this.setState({
+                        novelList:[...novelList,...res.data.BookList],
+                        page:page + 1
+                    },()=>{
+                        Portal.remove(key)
+                    })
+                }else{
+    
+                }
+            })
+        }
+    }
+    // 获取数据请求地址
+    getSearchUrl = (page) => {
+        let {select} = this.state;
+        return `https://shuapi.jiaston.com/top/${select[0].child[select[0].checkIndex].type}/top/${select[1].child[select[1].checkIndex].type}/${select[2].child[select[2].checkIndex].type}/${page}.html`
+    }
+    // 筛选条件点击时
     itemPress = (i,index) => {
         let {select} = this.state;
         let toValue = listPadding + (itemWidth-checkWidth) / 2 + itemWidth * index;
         select[i].checkIndex = -1;
         this.setState({
-            select
+            select,
+            novelList:[],
+            page:1
         });
         
         Animated.timing(// 随时间变化而执行动画
@@ -101,11 +140,83 @@ export default class RankScreen extends React.Component {
             select[i].checkIndex = index;
             this.setState({
                 select
+            },()=>{
+                this.getData();
             });
         }); 
     }
+    _renderNovel = ({item}) => {
+        return (
+            <View style={S.novelBox} key={item.Id}>
+                <View style={S.novelImg}>
+                    <Image
+                        style={{width: 75, height: 100}}
+                        source={{uri: `https://imgapi.jiaston.com/BookFiles/BookImages/${item.Img}`}}
+                    />
+                </View>
+                <View style={S.novelInfo}>
+                    <View style={S.novleTitle}>
+                        <Text style={{fontSize:18,color:"#000",lineHeight:26}}>
+                            {item.Name}
+                        </Text>
+                        <Text style={{fontSize:14,color:"#E6A23C",lineHeight:26}}>
+                            {item.Score}分
+                        </Text>
+                    </View>
+                    <View>
+                        <Text style={{color:"#303133",paddingBottom:16}}>
+                            {item.CName} | {item.Author}
+                        </Text>
+                    </View>
+                    <View>
+                        <Text style={{color:"#909399",paddingBottom:10}} numberOfLines={2}>
+                            {item.Desc}
+                        </Text>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+    _keyExtractor = (item) => toString(item.Id);
+    _listHeader = () => {
+        let {select} = this.state;
+        return (
+            <View>
+                {
+                    select.map( (e,i) => {
+                        return (
+                            <View style={S.selectBox} key={i}>
+                                <Animated.View style={
+                                    [
+                                        S.check, 
+                                        {
+                                            left:e.left
+                                        }
+                                    ]
+                                }
+                                ></Animated.View>
+                                {
+                                    e.child.map( (item,index) => {
+                                        return (
+                                            <Text 
+                                                style={[S.select, e.checkIndex==index? S.checked:{}]}
+                                                key={index}
+                                                onPress={()=>{
+                                                    this.itemPress(i,index)
+                                                }}
+                                            >{item.text}</Text>
+                                        )
+                                    })
+                                }
+                            </View>
+                        )
+                    })
+                }
+            </View>
+        )
+    }
     render(){
-        let {backgroundColor, select, selectIndex} = this.state;
+        let {backgroundColor, refreshing, novelList} = this.state;
         return (
             <SafeAreaView style={{flex:1,backgroundColor}}>
                 <Header 
@@ -118,38 +229,18 @@ export default class RankScreen extends React.Component {
                         </View>
                     }
                 ></Header>
-                <ScrollView style={S.list}>
-                    {
-                        select.map( (e,i) => {
-                            return (
-                                <View style={S.selectBox} key={i}>
-                                    <Animated.View style={
-                                        [
-                                            S.check, 
-                                            {
-                                                left:e.left
-                                            }
-                                        ]
-                                    }
-                                    ></Animated.View>
-                                    {
-                                        e.child.map( (item,index) => {
-                                            return (
-                                                <Text 
-                                                    style={[S.select, e.checkIndex==index? S.checked:{}]} key={index}
-                                                    onPress={()=>{
-                                                        this.itemPress(i,index)
-                                                    }}
-                                                >{item.text}</Text>
-                                            )
-                                        })
-                                    }
-                                </View>
-                            )
-                        })
-                    }
-                    
-                </ScrollView>
+                <FlatList
+                    style={S.list}
+                    data={novelList}
+                    ListHeaderComponent={this._listHeader}
+                    renderItem={this._renderNovel}
+                    keyExtractor={this._keyExtractor}
+                    refreshing={refreshing}
+                    onEndReached={()=>{
+                        this.getData();
+                    }}
+                    onEndReachedThreshold={0}
+                />
             </SafeAreaView>
         )
     }
@@ -182,5 +273,20 @@ const S = StyleSheet.create({
     },
     checked:{
         color:"#fff"
+    },
+    novelInfo:{
+        flex: 1,
+        paddingLeft: 10,
+    },  
+    novelBox:{
+        flexDirection: "row",
+        paddingHorizontal: 15,
+        paddingVertical:10,
+        justifyContent:"space-between"
+    },
+    novleTitle:{
+        flexDirection: "row",
+        justifyContent:"space-between",
+        paddingBottom:10
     }
 })

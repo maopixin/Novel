@@ -9,19 +9,20 @@ export default class Header extends React.Component {
         
     }
     render(){
-        let {backgroundColor, title, Left, Right, onLeftPress, onRightPress, scrollY, style} = this.props;
+        let {backgroundColor, title, Left, Right, onLeftPress, onRightPress, scrollY, style,height} = this.props;
         return (
-            <Animated.View 
+            <View 
                 style={[S.container, {
                     ...style,
-                    backgroundColor,
-                    opacity: scrollY.interpolate({
-                        inputRange: [0,50],
-                        outputRange: [0,1]
-                    }),
-                    
                 }]}
             >
+                <Animated.View style={[S.headerBg,{
+                    backgroundColor,
+                    opacity: scrollY.interpolate({
+                        inputRange: [0,height-80],
+                        outputRange: [0,1]
+                    }),
+                }]}></Animated.View>
                 {
                     Left ? 
                     <TouchableOpacity style={S.leftContainer} onPress={onLeftPress}>
@@ -31,7 +32,15 @@ export default class Header extends React.Component {
                     null
                 }
                 <View>
-                    <Text style={S.title} numberOfLines={1}>{title}</Text>
+                    <Animated.Text 
+                        style={[S.title,{
+                            opacity: scrollY.interpolate({
+                                inputRange: [0,height-80],
+                                outputRange: [0,1]
+                            }),
+                        }]} 
+                        numberOfLines={1}
+                    >{title}</Animated.Text>
                 </View>
                 {
                     Right ? 
@@ -41,23 +50,29 @@ export default class Header extends React.Component {
                     :
                     null
                 }
-            </Animated.View>
+            </View>
         )
     }
 }
 
 const S = StyleSheet.create({
     container:{
-        height: 90,
-        backgroundColor: '#483D8B',
+        height: 80,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop:40
+        paddingTop:20
+    },
+    headerBg:{
+        position:"absolute",
+        top:0,
+        left:0,
+        right:0,
+        bottom:0
     },
     title:{
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 14,
+        marginTop:6,
         color: '#fff'
     },
     leftContainer:{

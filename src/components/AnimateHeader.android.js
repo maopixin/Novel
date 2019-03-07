@@ -6,7 +6,7 @@ export default class Header extends React.Component {
         super (props);
     }
     render(){
-        let {backgroundColor, title, Left, Right,onLeftPress,onRightPress, scrollY, style} = this.props;
+        let {backgroundColor, title, Left, Right,onLeftPress,onRightPress, scrollY, style, height} = this.props;
         return (
             <View style={[S.container, {
                 ...style,
@@ -14,7 +14,7 @@ export default class Header extends React.Component {
                 <Animated.View style={[S.headerBg,{
                     backgroundColor,
                     opacity: scrollY.interpolate({
-                        inputRange: [0,50],
+                        inputRange: [0,height-(50 + StatusBar.currentHeight)],
                         outputRange: [0,1]
                     }),
                 }]}></Animated.View>
@@ -27,7 +27,15 @@ export default class Header extends React.Component {
                     null
                 }
                 <View>
-                    <Text style={S.title} numberOfLines={1}>{title}</Text>
+                    <Animated.Text 
+                        style={[S.title,{
+                            opacity: scrollY.interpolate({
+                                inputRange: [0,height-(50 + StatusBar.currentHeight)],
+                                outputRange: [0,1]
+                            }),
+                        }]} 
+                        numberOfLines={1}
+                    >{title}</Animated.Text>
                 </View>
                 {
                     Right ? 
@@ -58,8 +66,7 @@ const S = StyleSheet.create({
         bottom:0
     },
     title:{
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 14,
         color: '#fff'
     },
     leftContainer:{

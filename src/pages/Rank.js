@@ -1,9 +1,11 @@
 import React from "react";
-import { View, Platform, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Animated, FlatList, Image} from "react-native";
+import { View, Platform, Text, SafeAreaView, StyleSheet, ScrollView, Dimensions, Animated, FlatList, Image, TouchableHighlight} from "react-native";
 import Header from '../components/Header'
+import TouchNovel from "../components/TouchNovel"
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import {getRank} from '../api'
 import { Portal, Toast } from '@ant-design/react-native'
+
 
 const isAndroid = Platform.OS == "android";
 const { width } = Dimensions.get('window');
@@ -145,36 +147,14 @@ export default class RankScreen extends React.Component {
             });
         }); 
     }
+    touchNovelPress = (Id) => {
+        this.props.navigation.navigate("BookInfo",{id:Id})
+    }
     _renderNovel = ({item}) => {
         return (
-            <View style={S.novelBox} key={item.Id}>
-                <View style={S.novelImg}>
-                    <Image
-                        style={{width: 75, height: 100}}
-                        source={{uri: `https://imgapi.jiaston.com/BookFiles/BookImages/${item.Img}`}}
-                    />
-                </View>
-                <View style={S.novelInfo}>
-                    <View style={S.novleTitle}>
-                        <Text style={{fontSize:18,color:"#000",lineHeight:26}}>
-                            {item.Name}
-                        </Text>
-                        <Text style={{fontSize:14,color:"#E6A23C",lineHeight:26}}>
-                            {item.Score}分
-                        </Text>
-                    </View>
-                    <View>
-                        <Text style={{color:"#303133",paddingBottom:16}}>
-                            {item.CName} | {item.Author}
-                        </Text>
-                    </View>
-                    <View>
-                        <Text style={{color:"#909399",paddingBottom:10}} numberOfLines={2}>
-                            {item.Desc}
-                        </Text>
-                    </View>
-                </View>
-            </View>
+            <TouchNovel item={item} onPress={()=>{
+                this.touchNovelPress(item.Id)
+            }}/>
         )
     }
     _keyExtractor = (item) => toString(item.Id);
@@ -240,6 +220,12 @@ export default class RankScreen extends React.Component {
                         this.getData();
                     }}
                     onEndReachedThreshold={0}
+                    // onScroll={(event)=>{
+                    //     let newScrollOffset = event.nativeEvent.contentOffset.y;
+                    //     if(newScrollOffset>((26+20)*3)){
+                    //         alert(1)
+                    //     }
+                    // }}
                 />
             </SafeAreaView>
         )
@@ -274,19 +260,5 @@ const S = StyleSheet.create({
     checked:{
         color:"#fff"
     },
-    novelInfo:{
-        flex: 1,
-        paddingLeft: 10,
-    },  
-    novelBox:{
-        flexDirection: "row",
-        paddingHorizontal: 15,
-        paddingVertical:10,
-        justifyContent:"space-between"
-    },
-    novleTitle:{
-        flexDirection: "row",
-        justifyContent:"space-between",
-        paddingBottom:10
-    }
+    
 })

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Platform, Text, ScrollView, StyleSheet, Image, Animated, Dimensions, ImageBackground} from "react-native";
 import AnimateHeader from '../components/AnimateHeader'
 import AntIcon from 'react-native-vector-icons/AntDesign'
+import Touch from "../components/Touch"
 import {getBookInfo} from '../api'
 import { Portal, Toast } from '@ant-design/react-native'
 
@@ -14,7 +15,7 @@ export default class BooksScreen extends React.Component {
     }
     state = {
         backgroundColor:"#303133",
-        bookInfo:{},
+        bookInfo:{BookVote:{}},
         scrollY: new Animated.Value(0)
     }
     componentWillMount(){
@@ -79,7 +80,7 @@ export default class BooksScreen extends React.Component {
                                 <Text style={S.infoTextInfo}>作者：{bookInfo.Author}</Text>
                                 <Text style={S.infoTextInfo}>类型：{bookInfo.CName}</Text>
                                 <Text style={S.infoTextInfo}>状态：{bookInfo.BookStatus}</Text>
-                                <Text style={S.infoTextInfo}>评价：{bookInfo.Score || 0}分</Text>
+                                <Text style={S.infoTextInfo}>评价：{bookInfo.BookVote.Score}分</Text>
                             </View>
                         </ImageBackground>
                         <View style={S.btns}>
@@ -111,10 +112,27 @@ export default class BooksScreen extends React.Component {
                                 <Text style={S.desc}>{bookInfo.Desc}</Text>
                             </View>
                         </View>
+                        <View style={{backgroundColor:"#fff",padding:10}}>
+                            <View style={S.title}>
+                                <Text style={S.titleText}>目录</Text>
+                                <Text></Text>
+                            </View>
+                            <Touch>
+                                <View style={S.menu}>
+                                    <AntIcon style={S.menuIcon} name="bars" size={14} color="#606266"/>
+                                    <View style={S.menuInfo}>
+                                        <Text>最近更新：{bookInfo.LastTime}</Text>
+                                        <Text>{bookInfo.LastChapter}</Text>
+                                    </View>
+                                    <AntIcon style={S.menuIcon} name="right" size={14} color="#606266"/>
+                                </View>
+                            </Touch>
+                        </View>
+
                     </View>
                 </ScrollView>
                 <View>
-                    <Text>24123545613</Text>
+                    
                 </View>
             </View>
             
@@ -199,5 +217,18 @@ const S = StyleSheet.create({
     desc:{
         lineHeight:18,
         color:"#909399"
+    },
+    menu:{
+        flexDirection:"row",
+        alignItems:"center",
+        justifyContent:"space-between",
+    },
+    menuInfo:{
+        flex:1,
+        paddingLeft:10
+    },
+    menuIcon:{
+        padding:8,
+        
     }
 })

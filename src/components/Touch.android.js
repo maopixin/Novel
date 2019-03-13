@@ -12,11 +12,9 @@ export default class Header extends React.Component {
                 onPress={onPress}
                 style={[style]}
             >
-                <View style={S.view}>
-                    {
-                        this.props.children
-                    }
-                </View>
+                {
+                    this.props.children
+                }
             </TouchableNativeFeedback>
         )
     }

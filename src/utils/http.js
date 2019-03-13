@@ -17,8 +17,11 @@ export default {
         if(data.data){
             queryString = "?" + qs(data.data)
         }
-        return fetch(data.url + queryString).then((response)=>{
+        return fetch(data.url + queryString)
+        .then((response)=>{
             return response.json();
+        }).catch((error)=>{
+            console.log(error)
         })
     }
 }

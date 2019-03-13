@@ -4,7 +4,7 @@ import {Text} from "react-native"
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import Books from '../pages/Books'
 import Shop from '../pages/Shop'
-import Rank from '../pages/Rank'
+import Look from '../pages/Look'
 
 const TabNavigator = createBottomTabNavigator({
     BooksScreen:{
@@ -37,12 +37,12 @@ const TabNavigator = createBottomTabNavigator({
             }
         }),
     },
-    RankScreen:{
-        screen:Rank,
+    LookScreen:{
+        screen:Look,
         navigationOptions: ({ navigation }) => ({
             tabBarLabel: ({tintColor}) => {
                 return (
-                    <Text style={{color:tintColor,textAlign:"center"}}>排行榜</Text>
+                    <Text style={{color:tintColor,textAlign:"center"}}>发现</Text>
                 )
             },
             tabBarIcon:({tintColor}) => {

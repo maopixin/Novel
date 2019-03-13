@@ -157,7 +157,7 @@ export default class RankScreen extends React.Component {
             }}/>
         )
     }
-    _keyExtractor = (item) => toString(item.Id);
+    _keyExtractor = (item) => item.Id.toString();
     _listHeader = () => {
         let {select} = this.state;
         return (

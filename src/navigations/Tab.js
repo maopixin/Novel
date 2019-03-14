@@ -47,7 +47,7 @@ const TabNavigator = createBottomTabNavigator({
             },
             tabBarIcon:({tintColor}) => {
                 return (
-                    <AntIcon name="linechart" size={24} color={tintColor}/>
+                    <AntIcon name="eyeo" size={24} color={tintColor}/>
                 )
             }
         }),

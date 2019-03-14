@@ -51,6 +51,7 @@ export default class BooksScreen extends React.Component {
                 ></AnimateHeader>
                 <ScrollView 
                     style={S.infoBox}
+                    scrollEventThrottle={20}
                     onScroll={
                         Animated.event([
                             { 

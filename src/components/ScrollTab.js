@@ -31,28 +31,35 @@ export default class ScrollTab extends React.Component {
                     }
                     <Animated.View 
                         style={[S.tabBottomLine,{
-                            left:scrollX.interpolate({
-                                inputRange: [inputRangeMin,inputRangeMax],
-                                outputRange: [outputRangeMin,outputRangeMax]
-                            })
+                            transform:[
+                                {
+                                    translateX: scrollX.interpolate({
+                                        inputRange: [inputRangeMin,inputRangeMax],
+                                        outputRange: [outputRangeMin,outputRangeMax]
+                                    })
+                                }
+                            ]
                         }]}
                     ></Animated.View>
                 </View>
-                <ScrollView
+                <Animated.ScrollView
                     style={{flex:1}}
                     pagingEnabled={true}
                     horizontal={true}
-                    scrollEventThrottle={20}
-                    showsVerticalScrollIndicator={false}
-                    onScroll={Animated.event([
-                        { 
-                            nativeEvent: { 
-                                contentOffset: { 
-                                    x: this.state.scrollX
+                    scrollEventThrottle={0}
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={Animated.event(
+                        [
+                            { 
+                                nativeEvent: { 
+                                    contentOffset: { 
+                                        x: this.state.scrollX
+                                    }
                                 }
                             }
-                        }
-                    ])}
+                        ],
+                        { useNativeDriver: true }
+                    )}
                 >
                     {
                         tabs.map((item,index)=>{
@@ -66,7 +73,7 @@ export default class ScrollTab extends React.Component {
                             )
                         })
                     }
-                </ScrollView>
+                </Animated.ScrollView>
             </View>
         )
     }
